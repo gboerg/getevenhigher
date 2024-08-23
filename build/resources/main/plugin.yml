@@ -1,0 +1,16 @@
+name: GetEvenHigherPLUS
+version: '0.2-ALPHA'
+main: me.bycoba.getevenhigher.main.GetEvenHigher
+api-version: '1.21'
+author: 'byCoba'
+description: 'Finally you can use drugs in Minecraft without downloading a mod!'
+commands:
+  joint:
+  cookie:
+  lsd:
+  coke:
+  drugs:
+  creativity:
+  drl:
+libraries:
+  - "de.miraculixx:kpaper:1.2.0"
