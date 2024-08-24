@@ -1,20 +1,17 @@
 package me.bycoba.getevenhigher.main.drugs.interaction
 
-import me.bycoba.getevenhigher.main.GetEvenHigher
 import me.bycoba.getevenhigher.main.manager.DrugManager
 import me.bycoba.getevenhigher.main.manager.InventoryManager
 import me.bycoba.getevenhigher.main.tasks.RunTaskLater
-import me.bycoba.getevenhigher.main.tasks.TaskSpecific
 import me.bycoba.getevenhigher.main.validator.SpawnValidator
 import org.bukkit.Bukkit
-import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.ItemStack
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffect
@@ -51,7 +48,8 @@ class LSD(private val plugin: JavaPlugin) {
         SpawnValidator.scheduleNetherSpawnSearch(player, plugin)
 
         // Effekte anwenden und nach Verzögerung teleportieren
-        RunTaskLater.scheduleTask(plugin, 100L) {
+
+        RunTaskLater.scheduleTask(plugin, 1000L) {
             if (player.isOnline) {
                 applyLsdEffects(player, originalLocation)
             }
@@ -63,18 +61,48 @@ class LSD(private val plugin: JavaPlugin) {
             }
         }
     }
+    fun handlePlayerDeath(event: PlayerDeathEvent) {
+        val player = event.entity
+
+        // Überprüfen, ob der Spieler durch LSD gestorben ist
+        if (player.hasMetadata("LSD_EFFECT")) {
+            event.deathMessage = "${player.name} imagined death! Must be a bad trip"
+            event.keepInventory = true
+            event.keepLevel = true
+            event.drops.clear()
+
+            // Entferne die Metadaten nach dem Tod
+            player.removeMetadata("LSD_EFFECT", plugin)
+
+            // Automatischer Respawn nach kurzer Verzögerung
+            RunTaskLater.scheduleTask(plugin, 150L) {
+                if (player.isOnline) {
+                    player.spigot().respawn()  // Erzwingt den Respawn des Spielers
+
+                    // Setze die Gesundheit auf die Hälfte, um den Effekt eines Trips zu simulieren
+                    player.health = player.maxHealth / 2
+
+                    // Teleportiere den Spieler zurück zum Todesort oder einem spezifischen Ort
+                    player.teleport(event.entity.location)
+                    player.sendActionBar("§cYou feel dizzy and confused...") // Nachricht zum Effekt
+                }
+            }
+        }
+    }
+
+    fun handlePlayerQuit(event: PlayerQuitEvent) {
+        val player = event.player
+
+        // Überprüfen, ob der Spieler LSD konsumiert hat
+        if (player.hasMetadata("LSD_EFFECT")) {
+            // Nachricht senden, bevor der Spieler den Server verlässt
+            player.sendMessage("You can't escape your mind...")
+        }
+    }
+
     private fun simulatePlayerDeath(player: Player, deathLocation: Location) {
         // Spieler wirklich sterben lassen, um das PlayerDeathEvent auszulösen
         player.health = 0.0  // Dies löst das PlayerDeathEvent automatisch aus
-
-        // Wiederbelebung nach Todesbildschirm
-        RunTaskLater.scheduleTask(plugin, 60L) {  // Verzögerung, um den Todesbildschirm anzuzeigen
-            if (player.isOnline) {
-                player.spigot().respawn()
-                player.health = player.maxHealth / 2  // Setze die Gesundheit auf die Hälfte
-                player.teleport(deathLocation)  // Spieler an den Todesort teleportieren
-            }
-        }
     }
 
     private fun applyLsdEffects(player: Player, originalLocation: Location) {
