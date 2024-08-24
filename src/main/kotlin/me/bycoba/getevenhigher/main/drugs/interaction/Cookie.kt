@@ -1,5 +1,6 @@
 package me.bycoba.getevenhigher.main.drugs.interaction
 
+import me.bycoba.getevenhigher.main.manager.DrugManager
 import me.bycoba.getevenhigher.main.manager.InventoryManager
 import me.bycoba.getevenhigher.main.tasks.RunTaskLater
 import org.bukkit.Particle
@@ -17,8 +18,8 @@ class Cookie (private val plugin: JavaPlugin) {
         val player = event.player
         val itemInHand = event.itemInHand
 
-        if (itemInHand != null && itemInHand.hasItemMeta() && itemInHand.itemMeta?.displayName == "§2Unusual Cookie") {
-            player.sendActionBar("§3Drücke die Rechte Maustaste während du NICHT auf einen Block schaust")
+        if (itemInHand != null && itemInHand.hasItemMeta() && itemInHand.itemMeta?.displayName == DrugManager.DrugConfig.Cookie.displayName) {
+            player.sendActionBar(DrugManager.DrugConfig.Cookie.actionBarOnFailedUse)
             event.isCancelled = true
         }
     }
@@ -26,9 +27,8 @@ class Cookie (private val plugin: JavaPlugin) {
     fun onCookie(event: PlayerItemConsumeEvent) {
         val player = event.player
         val item = event.item ?: return
-        val isUnusualCookie = item.itemMeta?.displayName == "§2Unusual Cookie"
-        val UnusualCookie = "§2Unusual Cookie"
-        player.sendActionBar("§2Hmm? Very Strange - Nothing happened - Maybe try another one")
+        val isUnusualCookie = item.itemMeta?.displayName == DrugManager.DrugConfig.Cookie.displayName
+        player.sendActionBar(DrugManager.DrugConfig.Cookie.actionBar001)
 
         RunTaskLater.scheduleTask(plugin, 200L, Runnable {
             if (player.isOnline && isUnusualCookie) {
@@ -40,8 +40,8 @@ class Cookie (private val plugin: JavaPlugin) {
                 player.addPotionEffect(PotionEffect(PotionEffectType.LUCK, 420, 69))
                 player.addPotionEffect(PotionEffect(PotionEffectType.MINING_FATIGUE, 1000, 55))
 
-                player.sendActionBar("§2What a funky feelin")
-                InventoryManager.removeItemByName(player, UnusualCookie)
+                player.sendActionBar(DrugManager.DrugConfig.Cookie.actionBar002)
+                InventoryManager.removeItemByName(player, DrugManager.DrugConfig.Cookie.displayName)
             }
         })
     }

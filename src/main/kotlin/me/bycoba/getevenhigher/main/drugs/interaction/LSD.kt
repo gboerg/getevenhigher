@@ -1,5 +1,8 @@
 package me.bycoba.getevenhigher.main.drugs.interaction
 
+import me.bycoba.getevenhigher.main.GetEvenHigher
+import me.bycoba.getevenhigher.main.manager.DrugManager
+import me.bycoba.getevenhigher.main.manager.InventoryManager
 import me.bycoba.getevenhigher.main.tasks.RunTaskLater
 import me.bycoba.getevenhigher.main.tasks.TaskSpecific
 import me.bycoba.getevenhigher.main.validator.SpawnValidator
@@ -12,6 +15,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -20,24 +24,12 @@ import org.bukkit.potion.PotionEffectType
 
 class LSD(private val plugin: JavaPlugin) {
 
-    private fun isStrangePaper(item: ItemStack): Boolean {
-        val meta = item.itemMeta
-        return meta != null && meta.hasDisplayName() && meta.displayName == "§5S§eTRaN §bGE §cPaP §aeR"
-    }
-
-    private fun removeStrangePaper(player: Player) {
-        val inventory = player.inventory
-        inventory.contents.filterNotNull()
-            .filter { item -> isStrangePaper(item) }
-            .forEach { item -> inventory.remove(item) }
-    }
-
     fun onLSDPlace(event: BlockPlaceEvent) {
         val player = event.player
         val itemInHand = event.itemInHand
 
-        if (itemInHand != null && itemInHand.hasItemMeta() && itemInHand.itemMeta?.displayName == "§5S§eTRaN §bGE §cPaP §aeR") {
-            player.sendActionBar("§3Drücke die Rechte Maustaste während du NICHT auf einen Block schaust")
+        if (itemInHand != null && itemInHand.hasItemMeta() && itemInHand.itemMeta?.displayName == DrugManager.DrugConfig.LSD.displayName) {
+            player.sendActionBar(DrugManager.DrugConfig.LSD.actionBarOnFailedUse)
             event.isCancelled = true
         }
     }
@@ -45,13 +37,15 @@ class LSD(private val plugin: JavaPlugin) {
     fun onLSD(event: PlayerInteractEvent) {
         val player = event.player
         val item = event.item ?: return
-        if (!isStrangePaper(item) || event.action != Action.RIGHT_CLICK_AIR) {
+        if (item.itemMeta?.displayName != DrugManager.DrugConfig.LSD.displayName || event.action != Action.RIGHT_CLICK_AIR) {
             return
         }
+        player.setMetadata("LSD_EFFECT", FixedMetadataValue(plugin, true))
 
         val originalLocation = player.location.clone()  // Speichert den ursprünglichen Standort
-        player.sendActionBar("§2Likin' Paper is quite weird - but I guess you should try - Right?")
-        removeStrangePaper(player)
+        val deathLocation = player.location.clone()
+        player.sendActionBar(DrugManager.DrugConfig.LSD.actionBar001)
+        InventoryManager.removeItemByName(player, DrugManager.DrugConfig.LSD.displayName)
 
         // Vorzeitige Suche nach sicherem Spawnpunkt im Nether
         SpawnValidator.scheduleNetherSpawnSearch(player, plugin)
@@ -62,36 +56,26 @@ class LSD(private val plugin: JavaPlugin) {
                 applyLsdEffects(player, originalLocation)
             }
         }
-    }
-    private fun applyLsdfakedeath(player: Player, event: PlayerDeathEvent) {
 
-        // Setze den Todesbildschirm nicht anzeigen
-        event.keepInventory = true
-        event.keepLevel = true
-        event.drops.clear()
-        event.deathMessage = "${player.name} Imagined Death! Must be a bad trip "
-
-        // Verzögere die Wiederbelebung um ein paar Ticks (optional)
-        /*Bukkit.getScheduler().scheduleSyncDelayedTask(this, {
-            // Wiederbeleben des Spielers mit halber Gesundheit
-            player.spigot().respawn()
-            player.health = player.maxHealth / 2
-            player.teleport(event.entity.location) // Spieler an Todesort zurück teleportieren
-        }, 1L)
-
-       TaskSpecific.scheduleDelayedTask(this, 1L) {
-            // Wiederbeleben des Spielers mit halber Gesundheit
-            player.spigot().respawn()
-            player.health = player.maxHealth / 2
-            player.teleport(event.entity.location) // Spieler an Todesort zurück teleportieren
+        RunTaskLater.scheduleTask(plugin, 200L) {
+            if (player.isOnline) {
+                simulatePlayerDeath(player, deathLocation)
+            }
         }
-
-
-
-         */
-
     }
+    private fun simulatePlayerDeath(player: Player, deathLocation: Location) {
+        // Spieler wirklich sterben lassen, um das PlayerDeathEvent auszulösen
+        player.health = 0.0  // Dies löst das PlayerDeathEvent automatisch aus
 
+        // Wiederbelebung nach Todesbildschirm
+        RunTaskLater.scheduleTask(plugin, 60L) {  // Verzögerung, um den Todesbildschirm anzuzeigen
+            if (player.isOnline) {
+                player.spigot().respawn()
+                player.health = player.maxHealth / 2  // Setze die Gesundheit auf die Hälfte
+                player.teleport(deathLocation)  // Spieler an den Todesort teleportieren
+            }
+        }
+    }
 
     private fun applyLsdEffects(player: Player, originalLocation: Location) {
         player.addPotionEffect(PotionEffect(PotionEffectType.NAUSEA, 1000, 1))
@@ -99,7 +83,6 @@ class LSD(private val plugin: JavaPlugin) {
         player.addPotionEffect(PotionEffect(PotionEffectType.LUCK, 420, 69))
 
         player.sendActionBar("§2What a funky feelin'")
-
         RunTaskLater.scheduleTask(plugin, 100L) {
             if (player.isOnline) {
                 // Teleportiere den Spieler zum sicheren Punkt im Nether

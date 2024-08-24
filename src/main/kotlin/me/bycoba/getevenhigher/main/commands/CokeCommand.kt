@@ -1,5 +1,6 @@
 package me.bycoba.getevenhigher.main.commands
 
+import me.bycoba.getevenhigher.main.manager.DrugManager
 import me.bycoba.getevenhigher.main.manager.InteractionManager
 import org.bukkit.Material
 import org.bukkit.command.Command
@@ -24,19 +25,14 @@ class CokeCommand : CommandExecutor {
         val meta: ItemMeta? = item.itemMeta
 
         if (meta != null) {
-            meta.setDisplayName("§2Almost Sugar")
-            meta.lore = listOf(
-                "Looks like regular sugar",
-                "- ?",
-                "§7uses left",
-                "§7safe uses left" // Zeige die sichere Verwendung in der Lore an
-            )
+            meta.setDisplayName(DrugManager.DrugConfig.Coke.displayName)
+            meta.lore = DrugManager.DrugConfig.Coke.lore
             meta.setEnchantmentGlintOverride(true)
             item.itemMeta = meta
         }
 
         player.inventory.addItem(item)
-        player.sendActionBar("You have received some sugar!")
+        player.sendActionBar(DrugManager.DrugConfig.Coke.actionBarOnReceive)
 
         return true
     }

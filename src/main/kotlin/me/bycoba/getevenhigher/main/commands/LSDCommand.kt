@@ -1,5 +1,7 @@
 package me.bycoba.getevenhigher.main.commands
 
+import me.bycoba.getevenhigher.main.manager.DrugManager.DrugConfig.LSD.displayName
+import me.bycoba.getevenhigher.main.manager.DrugManager.DrugConfig.LSD.lore
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -23,8 +25,8 @@ class LSDCommand : CommandExecutor {
         val meta: ItemMeta? = item.itemMeta
 
         if (meta != null) {
-            meta.setDisplayName("§5S§eTRaN §bGE §cPaP §aeR")
-            meta.lore = listOf("Paper with a strong mind connection drawing")
+            meta.setDisplayName(displayName)
+            meta.lore = lore
             //meta.addEnchant(Enchantment., 1, true)
             meta.hasEnchantmentGlintOverride()
             meta.setEnchantmentGlintOverride(true)

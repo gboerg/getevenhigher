@@ -1,5 +1,6 @@
 package me.bycoba.getevenhigher.main.commands
 
+import me.bycoba.getevenhigher.main.manager.DrugManager
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -23,8 +24,8 @@ class CookieCommand: CommandExecutor {
         val meta: ItemMeta? = item.itemMeta
 
         if (meta != null) {
-            meta.setDisplayName("§2Unusual Cookie")
-            meta.lore = listOf("Looks like an usual cookie but it smells different")
+            meta.setDisplayName(DrugManager.DrugConfig.Cookie.displayName)
+            meta.lore = DrugManager.DrugConfig.Cookie.lore
             meta.hasEnchantmentGlintOverride()
             meta.setEnchantmentGlintOverride(true)
 
@@ -32,7 +33,7 @@ class CookieCommand: CommandExecutor {
         }
 
         player.inventory.addItem(item)
-        player.sendActionBar("You have received a special cookie!")
+        player.sendActionBar(DrugManager.DrugConfig.Cookie.actionBarOnReceive)
 
         return true
     }

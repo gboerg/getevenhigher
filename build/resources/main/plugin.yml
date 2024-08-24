@@ -12,5 +12,6 @@ commands:
   drugs:
   creativity:
   drl:
+  ec:
 libraries:
   - "de.miraculixx:kpaper:1.2.0"

@@ -14,5 +14,9 @@ class TaskSpecific {
         fun scheduleRepeatingTask(plugin: Plugin, delay: Long, duration: Long,   task: Runnable)  {
             Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, duration)
         }
+
+        fun scheduleSyncDelayedTask(plugin: Plugin,delay: Long, task: Runnable) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, task, delay)
+        }
     }
 }

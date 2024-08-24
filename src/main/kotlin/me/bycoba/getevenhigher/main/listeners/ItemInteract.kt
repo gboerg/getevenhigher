@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityTargetEvent
+import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.plugin.java.JavaPlugin
@@ -73,5 +74,23 @@ class ItemInteract(private val plugin: JavaPlugin, private val interactionManage
     @EventHandler
     fun onLSDInteract(event: PlayerInteractEvent) {
         lsd.onLSD(event)
+    }
+
+    @EventHandler
+    fun onPlayerDeath(event: PlayerDeathEvent) {
+        val player = event.entity
+
+        if (player.hasMetadata("LSD_EFFECT")) {
+            event.deathMessage = "${player.name} imagined death! Must be a bad trip"
+
+            // Inventar und Level behalten
+            event.keepInventory = true
+            event.keepLevel = true
+
+            // Verhindern, dass Items gedroppt werden
+            event.drops.clear()
+            // Entferne die Metadaten nach dem Tod
+            player.removeMetadata("LSD_EFFECT", plugin)
+        }
     }
 }

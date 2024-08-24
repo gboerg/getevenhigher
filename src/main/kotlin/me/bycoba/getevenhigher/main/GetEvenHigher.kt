@@ -16,6 +16,7 @@ class GetEvenHigher : JavaPlugin() {
     private lateinit var interactionManager: InteractionManager
     private lateinit var inventoryManager: InventoryManager
     private lateinit var addictionManager: AddictionManager
+    private lateinit var cuttingAgentManager: CuttingAgentManager
     private lateinit var drugManager: DrugManager
     private lateinit var joint: Joint
     private lateinit var mobIgnore: MobIgnore
@@ -53,6 +54,7 @@ class GetEvenHigher : JavaPlugin() {
         fileManager = FileManager
         drugManager = DrugManager()
         addictionManager = AddictionManager()
+        cuttingAgentManager = CuttingAgentManager()
         inventoryManager = InventoryManager()
         interactionManager = InteractionManager()
         mobIgnore = MobIgnore(this)
@@ -71,6 +73,7 @@ class GetEvenHigher : JavaPlugin() {
         this.getCommand("drugs")?.setExecutor(DrugsCommand())
         this.getCommand("creativity")?.setExecutor(CreativityCommand())
         this.getCommand("drl")?.setExecutor(DebugCommand())
+        this.getCommand("ec")?.setExecutor(EffectClearCommand())
     }
 
     private fun registerEvents() {
@@ -96,6 +99,10 @@ class GetEvenHigher : JavaPlugin() {
 
     fun getDrugManager(): DrugManager {
         return drugManager
+    }
+
+    fun getCuttingAgentManager(): CuttingAgentManager {
+        return cuttingAgentManager
     }
 
     fun getFileManager(): FileManager {

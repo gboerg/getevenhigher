@@ -139,19 +139,7 @@ class MobAttack (private val plugin: JavaPlugin ) {
         aggressionMobMode.remove(player)
         player.sendActionBar("§4Mob verhalten zurückgesetzt.")
     }
-/*
-    fun isAggressiveOrPassiveMob(entity: Entity): Boolean {
-        return when (entity.type) {
-            EntityType.ZOMBIE, EntityType.SKELETON, EntityType.CREEPER,
-            EntityType.SPIDER, EntityType.ENDERMAN, EntityType.COW,
-            EntityType.SHEEP, EntityType.CHICKEN, EntityType.PIG,
-            EntityType.HORSE, EntityType.WOLF, EntityType.OCELOT,
-            EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER -> true
-            else -> false
-        }
-    }
 
- */
     fun isAggressiveOrPassiveMob(entity: Entity): Boolean {
         return entity.type in aggressiveMobs || entity.type in passiveMobs
     }

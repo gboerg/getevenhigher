@@ -1,6 +1,7 @@
 package me.bycoba.getevenhigher.main.drugs.interaction
 
 import me.bycoba.getevenhigher.main.drugs.customEffects.MobIgnore
+import me.bycoba.getevenhigher.main.manager.DrugManager
 import me.bycoba.getevenhigher.main.manager.InteractionManager
 import me.bycoba.getevenhigher.main.manager.InventoryManager
 import me.bycoba.getevenhigher.main.tasks.RunTaskLater
@@ -18,10 +19,11 @@ class Joint(private val plugin: JavaPlugin) {
 
 
     fun onJointPlace(event: BlockPlaceEvent) {
+        val jointDisplayName = DrugManager.DrugConfig.Joint.displayName
         val player = event.player
         val itemInHand = event.itemInHand
 
-        if (itemInHand != null && itemInHand.hasItemMeta() && itemInHand.itemMeta?.displayName == "§2Herb in Paper") {
+        if (itemInHand != null && itemInHand.hasItemMeta() && itemInHand.itemMeta?.displayName == jointDisplayName) {
             player.sendActionBar("§3Drücke die Rechte Maustaste während du NICHT auf einen Block schaust")
             event.isCancelled = true
         }
@@ -30,9 +32,10 @@ class Joint(private val plugin: JavaPlugin) {
     fun onJoint(event: PlayerInteractEvent) {
         val player = event.player
         val item = event.item ?: return
-        val joint = "§2Herb in Paper"
+        val jointDisplayName = DrugManager.DrugConfig.Joint.displayName
 
-        if (item.itemMeta?.displayName != "§2Herb in Paper" || event.action != Action.RIGHT_CLICK_AIR) {
+
+        if (item.itemMeta?.displayName != jointDisplayName || event.action != Action.RIGHT_CLICK_AIR) {
             return
         }
 
@@ -44,19 +47,15 @@ class Joint(private val plugin: JavaPlugin) {
         player.addPotionEffect(PotionEffectType.SLOW_FALLING.createEffect(420, 69))
         player.addPotionEffect(PotionEffectType.LUCK.createEffect(420, 69))
         player.addPotionEffect(PotionEffectType.MINING_FATIGUE.createEffect(1000, 55))
-        InventoryManager.removeItemByName(player, joint)
+        InventoryManager.removeItemByName(player, jointDisplayName)
 
 
         // Aktualisiere die Lore des Items
         val meta = item.itemMeta
         if (meta != null) {
-            meta.lore = listOf(
-                "An unknown herb rolled in something paperlike",
-                "- smells interesting tho",
-                "§7 uses left"
-            )
+            // Verwende die Lore aus der Konfiguration
+            meta.lore = DrugManager.DrugConfig.Joint.lore
             item.itemMeta = meta
-            meta.lore
         }
 
         // Plane das Zurücksetzen der Interaktionsanzahl und das Ignorieren der Mobs
