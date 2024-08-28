@@ -1,17 +1,19 @@
 package me.bycoba.getevenhigher.main
 
+import DrugsCommand
 import me.bycoba.getevenhigher.main.commands.*
 import me.bycoba.getevenhigher.main.drugs.customEffects.MobIgnore
 import me.bycoba.getevenhigher.main.drugs.interaction.Coke
 import me.bycoba.getevenhigher.main.drugs.interaction.Cookie
 import me.bycoba.getevenhigher.main.drugs.interaction.Joint
 import me.bycoba.getevenhigher.main.drugs.interaction.LSD
-import me.bycoba.getevenhigher.main.listeners.ItemInteract
+import me.bycoba.getevenhigher.main.listeners.EventListener
 import me.bycoba.getevenhigher.main.manager.*
 import org.bukkit.plugin.java.JavaPlugin
 
 class GetEvenHigher : JavaPlugin() {
 
+    private lateinit var pluginManager: PluginManager
     private lateinit var fileManager: FileManager
     private lateinit var interactionManager: InteractionManager
     private lateinit var inventoryManager: InventoryManager
@@ -51,6 +53,7 @@ class GetEvenHigher : JavaPlugin() {
 
     private fun initializeManagersAndObjects() {
         // Initialisiere Manager und Objekte
+        pluginManager = PluginManager()
         fileManager = FileManager
         drugManager = DrugManager()
         addictionManager = AddictionManager()
@@ -78,7 +81,7 @@ class GetEvenHigher : JavaPlugin() {
 
     private fun registerEvents() {
         // Registriere Events
-        server.pluginManager.registerEvents(ItemInteract(this, interactionManager), this)
+        server.pluginManager.registerEvents(EventListener(this, interactionManager), this)
     }
 
     override fun onDisable() {
@@ -87,6 +90,10 @@ class GetEvenHigher : JavaPlugin() {
         logger.info("${green}${config.name} has been saved successfully.$reset")
         logger.info("${red}${description.name} has been disabled.$reset")
         logger.info("${gray}============================================$reset")
+    }
+
+    fun getPluginManager(): PluginManager {
+        return pluginManager
     }
 
     fun getInteractionManager(): InteractionManager {

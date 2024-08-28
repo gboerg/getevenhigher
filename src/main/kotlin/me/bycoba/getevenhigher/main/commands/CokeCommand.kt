@@ -2,6 +2,7 @@ package me.bycoba.getevenhigher.main.commands
 
 import me.bycoba.getevenhigher.main.manager.DrugManager
 import me.bycoba.getevenhigher.main.manager.InteractionManager
+import me.bycoba.getevenhigher.main.manager.PluginManager
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -14,7 +15,7 @@ class CokeCommand : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("You must be a player to execute this command!")
+            sender.sendMessage(PluginManager.PluginConfig.isNotAPlayerError.notAPlayer)
             return true
         }
 
@@ -28,6 +29,7 @@ class CokeCommand : CommandExecutor {
             meta.setDisplayName(DrugManager.DrugConfig.Coke.displayName)
             meta.lore = DrugManager.DrugConfig.Coke.lore
             meta.setEnchantmentGlintOverride(true)
+            meta.setCustomModelData((Math.random() * 100000).toInt())
             item.itemMeta = meta
         }
 

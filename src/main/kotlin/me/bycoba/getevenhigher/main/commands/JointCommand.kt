@@ -3,6 +3,7 @@ package me.bycoba.getevenhigher.main.commands
 import me.bycoba.getevenhigher.main.manager.DrugManager
 import me.bycoba.getevenhigher.main.manager.DrugManager.DrugConfig.Joint.lore
 import me.bycoba.getevenhigher.main.manager.InteractionManager
+import me.bycoba.getevenhigher.main.manager.PluginManager
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -15,7 +16,7 @@ class JointCommand : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("You must be a player to execute this command!")
+            sender.sendMessage(PluginManager.PluginConfig.isNotAPlayerError.notAPlayer)
             return true
         }
 
@@ -30,11 +31,12 @@ class JointCommand : CommandExecutor {
             meta.lore = lore
             meta.hasEnchantmentGlintOverride()
             meta.setEnchantmentGlintOverride(true)
+            meta.setCustomModelData((Math.random() * 100000).toInt())
             item.itemMeta = meta
         }
 
         player.inventory.addItem(item)
-        player.sendActionBar("You have received a Joint!")
+        player.sendActionBar(DrugManager.DrugConfig.Joint.actionBarOnReceive)
 
 
         return true

@@ -1,7 +1,9 @@
 package me.bycoba.getevenhigher.main.commands
 
+import me.bycoba.getevenhigher.main.manager.DrugManager
 import me.bycoba.getevenhigher.main.manager.DrugManager.DrugConfig.LSD.displayName
 import me.bycoba.getevenhigher.main.manager.DrugManager.DrugConfig.LSD.lore
+import me.bycoba.getevenhigher.main.manager.PluginManager
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -15,7 +17,7 @@ class LSDCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
 
         if (sender !is Player) {
-            sender.sendMessage("You must be a player to execute this command!")
+            sender.sendMessage(PluginManager.PluginConfig.isNotAPlayerError.notAPlayer)
             return true
         }
 
@@ -30,12 +32,12 @@ class LSDCommand : CommandExecutor {
             //meta.addEnchant(Enchantment., 1, true)
             meta.hasEnchantmentGlintOverride()
             meta.setEnchantmentGlintOverride(true)
-
+            meta.setCustomModelData((Math.random() * 100000).toInt())
             item.itemMeta = meta
         }
 
         player.inventory.addItem(item)
-        player.sendActionBar("You have received a paper with a drawing on it!")
+        player.sendActionBar(DrugManager.DrugConfig.LSD.actionBarOnReceive)
 
         return true
     }

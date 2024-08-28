@@ -1,5 +1,7 @@
 package me.bycoba.getevenhigher.main.commands
 
+import me.bycoba.getevenhigher.main.manager.PluginManager
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.command.Command
@@ -14,7 +16,7 @@ class DebugCommand: CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
 
         if (sender !is Player) {
-            sender.sendMessage("You must be a player to execute this command!")
+            sender.sendMessage(PluginManager.PluginConfig.isNotAPlayerError.notAPlayer)
             return true
         }
 
@@ -25,7 +27,8 @@ class DebugCommand: CommandExecutor {
             return true
         }
         player.sendMessage("§l§6[DEBUG ASSISTANT] §8| §3DEBUG PLUGIN RELOAD : May cause issues!")
-        player.performCommand("reload confirm")
+        Bukkit.reload()
+        player.sendMessage("§l§6[DEBUG ASSISTANT] §8| §3RELOAD SUCCESSFULL!")
 
 
         return true

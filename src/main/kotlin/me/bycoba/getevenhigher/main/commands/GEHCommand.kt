@@ -8,7 +8,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class DrugsCommand : CommandExecutor {
+class GEHCommandCommand : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
@@ -17,7 +17,10 @@ class DrugsCommand : CommandExecutor {
         }
 
         // Überprüfen, ob der Befehl "drugs" ausgeführt wird
-        if (label.equals("drugs", ignoreCase = true)) {
+        if (label.equals("geh", ignoreCase = true)) {
+
+            sender.sendMessage("ULTIMATE TEXT DEBUGGIN'")
+
             // Erstellen und Senden der ersten Textkomponente
             val jointMessage = TextComponent("Click here to get a Joint")
             jointMessage.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/joint")

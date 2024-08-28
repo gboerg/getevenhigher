@@ -54,12 +54,14 @@ class LSD(private val plugin: JavaPlugin) {
                 applyLsdEffects(player, originalLocation)
             }
         }
-
+        /*
         RunTaskLater.scheduleTask(plugin, 200L) {
             if (player.isOnline) {
                 simulatePlayerDeath(player, deathLocation)
             }
         }
+        
+         */
     }
     fun handlePlayerDeath(event: PlayerDeathEvent) {
         val player = event.entity
